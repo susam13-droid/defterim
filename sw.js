@@ -1,4 +1,4 @@
-const CACHE = 'defterim-v1';
+const CACHE = 'defterim-v2';
 const SHELL = [
   './',
   './index.html',

@@ -10,7 +10,6 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png">
 
-<!-- iOS ana ekran uygulaması -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -40,7 +39,6 @@
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
   html, body { overscroll-behavior-y: none; }
 
   body {
@@ -126,6 +124,7 @@
     padding-bottom: calc(40px + env(safe-area-inset-bottom));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    position: relative;
   }
   .section { display: none; }
   .section.active { display: block; animation: fade .25s ease; }
@@ -135,7 +134,7 @@
     * { transition: none !important; }
   }
 
-  .page-header { margin-bottom: 24px; }
+  .page-header { margin-bottom: 24px; padding-right: 120px; }
   .eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
@@ -152,12 +151,33 @@
     letter-spacing: -.01em;
   }
 
+  /* ---------- Senkron göstergesi ---------- */
+  .sync-pill {
+    position: absolute;
+    top: calc(38px + env(safe-area-inset-top));
+    right: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .03em;
+    padding: 5px 11px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink-faint);
+    cursor: pointer;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  .sync-pill[data-state="ok"]      { color: var(--sage);  border-color: var(--sage-bg);  background: var(--sage-bg); }
+  .sync-pill[data-state="syncing"] { color: var(--ochre); border-color: var(--ochre-bg); background: var(--ochre-bg); }
+  .sync-pill[data-state="error"]   { color: var(--red);   border-color: var(--rose-bg);  background: var(--rose-bg); }
+
   /* ---------- Form ---------- */
   .add-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
   .add-form .grow { flex: 1 1 200px; min-width: 0; }
-  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
     font-family: 'Inter', sans-serif;
-    font-size: 16px; /* 16px altı iOS'ta odaklanınca otomatik yakınlaştırma yapar */
+    font-size: 16px;
     color: var(--ink);
     background: #fff;
     border: 1px solid var(--line);
@@ -184,11 +204,8 @@
     transition: opacity .15s ease;
   }
   .btn:hover { opacity: .88; }
-  .btn.ghost {
-    background: #fff;
-    color: var(--ink);
-    border: 1px solid var(--line);
-  }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
   .mic-btn {
     width: 42px; height: 42px;
     flex: 0 0 42px;
@@ -289,12 +306,7 @@
   .pay-item.paid { background: var(--sage-bg); }
   .pay-desc { font-size: 15px; word-break: break-word; }
   .pay-amount { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; white-space: nowrap; }
-  .pay-date {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
-    white-space: nowrap;
-  }
+  .pay-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
   .pay-date.overdue { color: var(--red); font-weight: 500; }
   .status-btn {
     font-family: 'Inter', sans-serif;
@@ -310,14 +322,9 @@
   .status-btn.paid   { background: var(--sage-bg);  color: var(--sage);  border-color: var(--sage-bg); }
   .status-btn.unpaid { background: var(--ochre-bg); color: var(--ochre); border-color: var(--ochre-bg); }
 
-  .empty-state {
-    padding: 40px 8px;
-    text-align: center;
-    color: var(--ink-faint);
-    font-size: 14px;
-  }
+  .empty-state { padding: 40px 8px; text-align: center; color: var(--ink-faint); font-size: 14px; }
 
-  /* ---------- Yedek sayfası ---------- */
+  /* ---------- Kartlar ---------- */
   .card {
     border: 1px solid var(--line);
     border-radius: 10px;
@@ -325,20 +332,17 @@
     margin-bottom: 14px;
     background: #fff;
   }
-  .card h2 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 0 0 6px;
-  }
+  .card h2 { font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-weight: 600; margin: 0 0 6px; }
   .card p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; margin: 0 0 14px; }
-  .card .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .card .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   textarea { width: 100%; min-height: 110px; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-  .stat-line {
+  .stat-line { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-faint); margin-top: 14px; }
+
+  .sync-state-line {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
-    color: var(--ink-faint);
-    margin-top: 14px;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
   }
 
   .toast {
@@ -354,17 +358,49 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity .2s ease, transform .2s ease;
-    z-index: 50;
+    z-index: 60;
     max-width: 88vw;
     text-align: center;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Kurulum penceresi ---------- */
+  .gate {
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 58, 85, .5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .gate.show { display: flex; }
+  .gate-box {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 26px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(43,58,85,.28);
+  }
+  .gate-box h2 { font-family: 'Fraunces', Georgia, serif; font-size: 21px; margin: 0 0 10px; }
+  .gate-box p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin: 0 0 16px; }
+  .gate-box input { width: 100%; margin-bottom: 10px; }
+  .gate-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .link-btn {
+    background: none; border: none; padding: 6px 0;
+    color: var(--ink-soft); font-family: 'Inter', sans-serif;
+    font-size: 13px; text-decoration: underline; cursor: pointer;
+  }
 
   @media (max-width: 640px) {
     body { padding: 0; height: 100vh; height: 100dvh; overflow: hidden; }
     .app { height: 100%; min-height: 0; border-radius: 0; box-shadow: none; }
     .page { padding: 26px 18px; padding-top: calc(26px + env(safe-area-inset-top)); padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
     h1 { font-size: 25px; }
+    .page-header { padding-right: 96px; }
+    .sync-pill { right: 18px; top: calc(28px + env(safe-area-inset-top)); font-size: 10px; padding: 4px 9px; }
     .tabs { width: 52px; }
     .tab { font-size: 13px; min-height: 84px; }
     .tab[data-section="backup"] { min-height: 62px; font-size: 12px; }
@@ -384,6 +420,7 @@
   </div>
 
   <div class="page">
+    <button class="sync-pill" id="sync-pill" data-state="off" title="Eşitle">○ Yerel</button>
 
     <!-- YAPILACAKLAR -->
     <div class="section active" id="todos">
@@ -444,7 +481,18 @@
     <div class="section" id="backup">
       <div class="page-header">
         <p class="eyebrow">Veri</p>
-        <h1>Yedek ve aktarım</h1>
+        <h1>Eşitleme ve yedek</h1>
+      </div>
+
+      <div class="card">
+        <h2>Cihazlar arası eşitleme</h2>
+        <p id="sync-desc">Defter şifreni girdiğinde notların şifrelenip buluta yazılır. Diğer cihazda aynı şifreyi girersen ikisi birleşir.</p>
+        <p class="sync-state-line" id="sync-state-line">Durum: kapalı</p>
+        <div class="row">
+          <button class="btn" id="sync-setup">Eşitlemeyi aç</button>
+          <button class="btn ghost" id="sync-now">Şimdi eşitle</button>
+          <button class="btn ghost" id="sync-off" style="color:var(--red)">Bu cihazda kapat</button>
+        </div>
       </div>
 
       <div class="card">
@@ -458,8 +506,8 @@
       </div>
 
       <div class="card">
-        <h2>Diğer cihaza aktar</h2>
-        <p>Defterini metin olarak kopyala, kendine WhatsApp veya e-posta ile gönder, diğer cihazda bu kutuya yapıştırıp yükle.</p>
+        <h2>Metinle aktar</h2>
+        <p>Eşitlemeyi kullanmak istemediğinde: defterini metin olarak kopyala, kendine gönder, diğer cihazda bu kutuya yapıştırıp yükle.</p>
         <div class="row" style="margin-bottom:12px">
           <button class="btn" id="copy-data">Veriyi kopyala</button>
           <button class="btn ghost" id="paste-load">Yapıştırılanı yükle</button>
@@ -469,7 +517,7 @@
 
       <div class="card">
         <h2>Defteri sıfırla</h2>
-        <p>Bütün maddeleri kalıcı olarak siler. Önce yedeğini indirmen iyi olur.</p>
+        <p>Bu cihazdaki bütün maddeleri siler. Eşitleme açıksa silme diğer cihaza da yansır. Önce yedeğini indirmen iyi olur.</p>
         <div class="row">
           <button class="btn ghost" id="reset-all" style="color:var(--red)">Her şeyi sil</button>
         </div>
@@ -481,44 +529,47 @@
   </div>
 </div>
 
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <h2>Defter şifresi</h2>
+    <p>Notların bu şifreyle şifrelenip buluta yazılır. Diğer cihazda <strong>tam olarak aynı şifreyi</strong> gir, defterin oraya da gelsin.<br><br>Şifreyi unutursan buluttaki notlar geri getirilemez — bir yere not et.</p>
+    <input type="password" id="gate-pass" placeholder="Defter şifresi" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="gate-row" style="margin-bottom:16px">
+      <button class="link-btn" id="gate-show">Şifreyi göster</button>
+    </div>
+    <div class="gate-row">
+      <button class="link-btn" id="gate-skip">Şimdilik atla</button>
+      <button class="btn" id="gate-ok">Bağlan</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'defterim.v2';
+  var SB_URL = 'https://jwocywqdyiuqyjuxiqmm.supabase.co';
+  var SB_KEY = 'sb_publishable_MzLvJ9K81WlGDQE5-3519Q_HCDr_O9G';
+
+  var STORAGE_KEY = 'defterim.v3';
+  var OLD_KEY     = 'defterim.v2';
+  var PASS_KEY    = 'defterim.pass';
+  var SKIP_KEY    = 'defterim.skipped';
+  var TOMBSTONE_DAYS = 60;
 
   var state = { todos: [], talks: [], payments: [] };
+  var creds = null;          // { id, key }
+  var syncTimer = null;
+  var pollTimer = null;
+  var lastSyncAt = null;
 
-  // ---------- Kaydetme / yükleme ----------
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      toast('Kaydedilemedi — cihaz depolaması dolu olabilir.');
-    }
-    renderStats();
-  }
-
-  function loadState() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        state.todos    = Array.isArray(parsed.todos)    ? parsed.todos    : [];
-        state.talks    = Array.isArray(parsed.talks)    ? parsed.talks    : [];
-        state.payments = Array.isArray(parsed.payments) ? parsed.payments : [];
-      }
-    } catch (e) {
-      toast('Kayıtlı veri okunamadı.');
-    }
-    renderAll();
-  }
-
+  // ================= yardımcılar =================
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
+  function now() { return Date.now(); }
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -532,10 +583,238 @@
     el.textContent = msg;
     el.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3000);
   }
 
-  // ---------- Sekmeler ----------
+  // ================= kalıcılık =================
+  function normalizeItem(it) {
+    if (!it || typeof it !== 'object') return null;
+    if (!it.id) it.id = uid();
+    if (typeof it.updatedAt !== 'number') it.updatedAt = it.createdAt || now();
+    if (typeof it.deleted !== 'boolean') it.deleted = false;
+    return it;
+  }
+  function normalizeState(s) {
+    return {
+      todos:    (Array.isArray(s.todos)    ? s.todos    : []).map(normalizeItem).filter(Boolean),
+      talks:    (Array.isArray(s.talks)    ? s.talks    : []).map(normalizeItem).filter(Boolean),
+      payments: (Array.isArray(s.payments) ? s.payments : []).map(normalizeItem).filter(Boolean)
+    };
+  }
+
+  function purgeTombstones(s) {
+    var cutoff = now() - TOMBSTONE_DAYS * 86400000;
+    ['todos', 'talks', 'payments'].forEach(function (k) {
+      s[k] = s[k].filter(function (it) { return !it.deleted || it.updatedAt > cutoff; });
+    });
+  }
+
+  function saveLocal() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (e) { toast('Kaydedilemedi — cihaz depolaması dolu olabilir.'); }
+    renderStats();
+  }
+
+  function loadLocal() {
+    var raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_KEY); }
+    catch (e) { /* yoksay */ }
+    if (raw) {
+      try { state = normalizeState(JSON.parse(raw)); }
+      catch (e) { toast('Kayıtlı veri okunamadı.'); }
+    }
+    purgeTombstones(state);
+  }
+
+  function live(list) { return list.filter(function (it) { return !it.deleted; }); }
+
+  // ================= şifreleme =================
+  var hasCrypto = !!(window.crypto && window.crypto.subtle && window.isSecureContext);
+
+  function bytesToB64(bytes) {
+    var s = '', chunk = 0x8000;
+    for (var i = 0; i < bytes.length; i += chunk) {
+      s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return btoa(s);
+  }
+  function b64ToBytes(b64) {
+    var bin = atob(b64), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  function deriveKeys(pass) {
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveBits'])
+      .then(function (base) {
+        return crypto.subtle.deriveBits({
+          name: 'PBKDF2',
+          salt: enc.encode('defterim-v3-salt'),
+          iterations: 120000,
+          hash: 'SHA-256'
+        }, base, 512);
+      })
+      .then(function (bits) {
+        var all = new Uint8Array(bits);
+        var idHex = Array.prototype.map.call(all.slice(0, 32), function (b) {
+          return ('0' + b.toString(16)).slice(-2);
+        }).join('');
+        return crypto.subtle.importKey('raw', all.slice(32, 64), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt'])
+          .then(function (key) { return { id: idHex, key: key }; });
+      });
+  }
+
+  function encryptState(key, obj) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var data = new TextEncoder().encode(JSON.stringify(obj));
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, data).then(function (ct) {
+      var out = new Uint8Array(iv.length + ct.byteLength);
+      out.set(iv, 0);
+      out.set(new Uint8Array(ct), iv.length);
+      return bytesToB64(out);
+    });
+  }
+
+  function decryptState(key, payload) {
+    var raw = b64ToBytes(payload);
+    var iv = raw.slice(0, 12), ct = raw.slice(12);
+    return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct).then(function (buf) {
+      return JSON.parse(new TextDecoder().decode(buf));
+    });
+  }
+
+  // ================= bulut =================
+  function sbHeaders(extra) {
+    var h = { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY };
+    for (var k in extra) h[k] = extra[k];
+    return h;
+  }
+
+  function remoteGet(id) {
+    return fetch(SB_URL + '/rest/v1/defterler?id=eq.' + encodeURIComponent(id) + '&select=payload',
+      { headers: sbHeaders({}), cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (rows) { return rows.length ? rows[0].payload : null; });
+  }
+
+  function remotePut(id, payload) {
+    return fetch(SB_URL + '/rest/v1/defterler', {
+      method: 'POST',
+      headers: sbHeaders({
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal'
+      }),
+      body: JSON.stringify({ id: id, payload: payload, updated_at: new Date().toISOString() })
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error('HTTP ' + r.status + ' ' + t); });
+    });
+  }
+
+  // ================= birleştirme =================
+  function mergeLists(a, b) {
+    var map = {};
+    (a || []).forEach(function (x) { if (x && x.id) map[x.id] = x; });
+    (b || []).forEach(function (x) {
+      if (!x || !x.id) return;
+      var cur = map[x.id];
+      if (!cur || (x.updatedAt || 0) > (cur.updatedAt || 0)) map[x.id] = x;
+    });
+    return Object.keys(map).map(function (k) { return map[k]; });
+  }
+
+  function mergeInto(remote) {
+    var r = normalizeState(remote);
+    state.todos    = mergeLists(state.todos, r.todos);
+    state.talks    = mergeLists(state.talks, r.talks);
+    state.payments = mergeLists(state.payments, r.payments);
+    purgeTombstones(state);
+  }
+
+  // ================= senkron =================
+  function setSync(stateName, text) {
+    var pill = document.getElementById('sync-pill');
+    pill.dataset.state = stateName;
+    pill.textContent = text;
+    var line = document.getElementById('sync-state-line');
+    if (!creds) {
+      line.textContent = 'Durum: kapalı — bu cihazda notlar yalnızca yerelde tutuluyor.';
+    } else if (stateName === 'ok') {
+      line.textContent = 'Durum: açık — son eşitleme ' +
+        (lastSyncAt ? lastSyncAt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '—');
+    } else if (stateName === 'syncing') {
+      line.textContent = 'Durum: eşitleniyor…';
+    } else {
+      line.textContent = 'Durum: açık ama buluta ulaşılamıyor. İnternet gelince kendiliğinden denenecek.';
+    }
+    document.getElementById('sync-off').style.display = creds ? '' : 'none';
+    document.getElementById('sync-now').style.display = creds ? '' : 'none';
+    document.getElementById('sync-setup').textContent = creds ? 'Şifreyi değiştir' : 'Eşitlemeyi aç';
+  }
+
+  var syncing = false;
+  function syncNow(silent) {
+    if (!creds || syncing) return Promise.resolve();
+    syncing = true;
+    setSync('syncing', '⟳ Eşitleniyor');
+    return remoteGet(creds.id)
+      .then(function (payload) {
+        if (!payload) return null;
+        return decryptState(creds.key, payload).catch(function () { return 'BAD'; });
+      })
+      .then(function (remote) {
+        if (remote === 'BAD') throw new Error('decrypt');
+        if (remote) { mergeInto(remote); renderAll(); saveLocal(); }
+        return encryptState(creds.key, state);
+      })
+      .then(function (payload) { return remotePut(creds.id, payload); })
+      .then(function () {
+        lastSyncAt = new Date();
+        setSync('ok', '✓ Eşitlendi');
+      })
+      .catch(function (e) {
+        setSync('error', '⚠ Bağlanamadı');
+        if (!silent) toast('Buluta ulaşılamadı. İnternetini kontrol et.');
+      })
+      .then(function () { syncing = false; });
+  }
+
+  function scheduleSync() {
+    if (!creds) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () { syncNow(true); }, 1500);
+  }
+
+  function startPolling() {
+    clearInterval(pollTimer);
+    if (!creds) return;
+    pollTimer = setInterval(function () {
+      if (document.visibilityState === 'visible') syncNow(true);
+    }, 15000);
+  }
+
+  function connect(pass, announce) {
+    if (!hasCrypto) { toast('Bu tarayıcıda şifreleme desteklenmiyor.'); return Promise.resolve(); }
+    setSync('syncing', '⟳ Bağlanıyor');
+    return deriveKeys(pass).then(function (c) {
+      creds = c;
+      try { localStorage.setItem(PASS_KEY, pass); } catch (e) {}
+      return remoteGet(creds.id).then(function (payload) {
+        if (announce) toast(payload ? 'Buluttaki defter bulundu, birleştiriliyor.' : 'Yeni defter oluşturuldu.');
+      }).catch(function () {});
+    }).then(function () {
+      startPolling();
+      return syncNow(false);
+    }).catch(function () {
+      setSync('error', '⚠ Bağlanamadı');
+      toast('Bağlanılamadı.');
+    });
+  }
+
+  // ================= sekmeler =================
   document.querySelectorAll('.tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
       document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
@@ -546,7 +825,11 @@
     });
   });
 
-  // ---------- Sesli yazma ----------
+  function goBackupTab() {
+    document.querySelector('.tab[data-section="backup"]').click();
+  }
+
+  // ================= sesli yazma =================
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var recognition = null, activeMic = null, activeTarget = null;
 
@@ -585,15 +868,18 @@
     });
   });
 
-  // ---------- Yapılacaklar ----------
+  // ================= Yapılacaklar =================
   var todoFilter = 'tümü';
 
   function renderTodos() {
     var list = document.getElementById('todo-list');
-    var items = state.todos.filter(function (t) {
+    var items = live(state.todos).filter(function (t) {
       return todoFilter === 'tümü' || t.category === todoFilter;
     });
-    items.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
+    items.sort(function (a, b) {
+      if (!!a.done !== !!b.done) return a.done ? 1 : -1;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
 
     if (!items.length) {
       list.innerHTML = '<div class="empty-state">Burası henüz boş. Yukarıdan ilk maddeni ekle.</div>';
@@ -601,8 +887,7 @@
     }
 
     list.innerHTML = items.map(function (t) {
-      var cats = ['iş', 'kişisel', 'diğer'];
-      var opts = cats.map(function (c) {
+      var opts = ['iş', 'kişisel', 'diğer'].map(function (c) {
         var label = c === 'iş' ? 'İş' : c === 'kişisel' ? 'Kişisel' : 'Diğer';
         return '<option value="' + c + '"' + (t.category === c ? ' selected' : '') + '>' + label + '</option>';
       }).join('');
@@ -623,10 +908,10 @@
     state.todos.push({
       id: uid(), text: text,
       category: document.getElementById('todo-category').value,
-      done: false, createdAt: Date.now()
+      done: false, createdAt: now(), updatedAt: now(), deleted: false
     });
     input.value = '';
-    renderTodos(); saveState();
+    renderTodos(); saveLocal(); scheduleSync();
   });
 
   document.getElementById('todo-filters').addEventListener('click', function (e) {
@@ -641,26 +926,27 @@
   document.getElementById('todo-list').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-action]');
     if (!btn || btn.tagName === 'SELECT') return;
-    var id = btn.dataset.id;
-    if (btn.dataset.action === 'delete-todo') {
-      state.todos = state.todos.filter(function (t) { return t.id !== id; });
-    } else if (btn.dataset.action === 'toggle-todo') {
-      var t = state.todos.find(function (x) { return x.id === id; });
-      if (t) t.done = !t.done;
-    } else return;
-    renderTodos(); saveState();
+    var t = state.todos.find(function (x) { return x.id === btn.dataset.id; });
+    if (!t) return;
+    if (btn.dataset.action === 'delete-todo') { t.deleted = true; t.updatedAt = now(); }
+    else if (btn.dataset.action === 'toggle-todo') { t.done = !t.done; t.updatedAt = now(); }
+    else return;
+    renderTodos(); saveLocal(); scheduleSync();
   });
 
   document.getElementById('todo-list').addEventListener('change', function (e) {
     if (e.target.dataset.action !== 'cat-todo') return;
     var t = state.todos.find(function (x) { return x.id === e.target.dataset.id; });
-    if (t) { t.category = e.target.value; renderTodos(); saveState(); }
+    if (t) { t.category = e.target.value; t.updatedAt = now(); renderTodos(); saveLocal(); scheduleSync(); }
   });
 
-  // ---------- Konuşulacaklar ----------
+  // ================= Konuşulacaklar =================
   function renderTalks() {
     var list = document.getElementById('talk-list');
-    var items = state.talks.slice().sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
+    var items = live(state.talks).slice().sort(function (a, b) {
+      if (!!a.done !== !!b.done) return a.done ? 1 : -1;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
     if (!items.length) {
       list.innerHTML = '<div class="empty-state">Konuşulacak bir şey aklına geldiğinde buraya yaz.</div>';
       return;
@@ -679,25 +965,23 @@
     var input = document.getElementById('talk-input');
     var text = input.value.trim();
     if (!text) return;
-    state.talks.push({ id: uid(), text: text, done: false, createdAt: Date.now() });
+    state.talks.push({ id: uid(), text: text, done: false, createdAt: now(), updatedAt: now(), deleted: false });
     input.value = '';
-    renderTalks(); saveState();
+    renderTalks(); saveLocal(); scheduleSync();
   });
 
   document.getElementById('talk-list').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-action]');
     if (!btn) return;
-    var id = btn.dataset.id;
-    if (btn.dataset.action === 'delete-talk') {
-      state.talks = state.talks.filter(function (t) { return t.id !== id; });
-    } else if (btn.dataset.action === 'toggle-talk') {
-      var t = state.talks.find(function (x) { return x.id === id; });
-      if (t) t.done = !t.done;
-    } else return;
-    renderTalks(); saveState();
+    var t = state.talks.find(function (x) { return x.id === btn.dataset.id; });
+    if (!t) return;
+    if (btn.dataset.action === 'delete-talk') { t.deleted = true; t.updatedAt = now(); }
+    else if (btn.dataset.action === 'toggle-talk') { t.done = !t.done; t.updatedAt = now(); }
+    else return;
+    renderTalks(); saveLocal(); scheduleSync();
   });
 
-  // ---------- Ödemeler ----------
+  // ================= Ödemeler =================
   function formatDate(d) {
     if (!d) return '';
     var p = d.split('-');
@@ -709,8 +993,8 @@
 
   function renderPayments() {
     var list = document.getElementById('payment-list');
-    var items = state.payments.slice().sort(function (a, b) {
-      if (a.paid !== b.paid) return a.paid ? 1 : -1;
+    var items = live(state.payments).slice().sort(function (a, b) {
+      if (!!a.paid !== !!b.paid) return a.paid ? 1 : -1;
       return (a.dueDate || '').localeCompare(b.dueDate || '');
     });
     if (!items.length) {
@@ -736,29 +1020,30 @@
     var amount = document.getElementById('pay-amount').value;
     var dueDate = document.getElementById('pay-date').value;
     if (!desc || amount === '') { toast('Açıklama ve tutar gerekli.'); return; }
-    state.payments.push({ id: uid(), desc: desc, amount: parseFloat(amount), dueDate: dueDate, paid: false });
+    state.payments.push({
+      id: uid(), desc: desc, amount: parseFloat(amount), dueDate: dueDate,
+      paid: false, createdAt: now(), updatedAt: now(), deleted: false
+    });
     document.getElementById('pay-desc').value = '';
     document.getElementById('pay-amount').value = '';
     document.getElementById('pay-date').value = '';
-    renderPayments(); saveState();
+    renderPayments(); saveLocal(); scheduleSync();
   });
 
   document.getElementById('payment-list').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-action]');
     if (!btn) return;
-    var id = btn.dataset.id;
-    if (btn.dataset.action === 'delete-pay') {
-      state.payments = state.payments.filter(function (p) { return p.id !== id; });
-    } else if (btn.dataset.action === 'toggle-pay') {
-      var p = state.payments.find(function (x) { return x.id === id; });
-      if (p) p.paid = !p.paid;
-    } else return;
-    renderPayments(); saveState();
+    var p = state.payments.find(function (x) { return x.id === btn.dataset.id; });
+    if (!p) return;
+    if (btn.dataset.action === 'delete-pay') { p.deleted = true; p.updatedAt = now(); }
+    else if (btn.dataset.action === 'toggle-pay') { p.paid = !p.paid; p.updatedAt = now(); }
+    else return;
+    renderPayments(); saveLocal(); scheduleSync();
   });
 
-  // ---------- Yedek ve aktarım ----------
+  // ================= yedek =================
   function payload() {
-    return JSON.stringify({ app: 'defterim', version: 2, savedAt: new Date().toISOString(), data: state });
+    return JSON.stringify({ app: 'defterim', version: 3, savedAt: new Date().toISOString(), data: state });
   }
 
   function applyImported(text) {
@@ -770,10 +1055,15 @@
       toast('Bu bir Defterim yedeği değil.');
       return;
     }
-    state.todos    = Array.isArray(d.todos)    ? d.todos    : [];
-    state.talks    = Array.isArray(d.talks)    ? d.talks    : [];
-    state.payments = Array.isArray(d.payments) ? d.payments : [];
-    renderAll(); saveState();
+    var imported = normalizeState(d);
+    var stamp = now();
+    ['todos', 'talks', 'payments'].forEach(function (k) {
+      imported[k].forEach(function (it) { it.updatedAt = stamp; });
+    });
+    state.todos    = mergeLists(state.todos, imported.todos);
+    state.talks    = mergeLists(state.talks, imported.talks);
+    state.payments = mergeLists(state.payments, imported.payments);
+    renderAll(); saveLocal(); scheduleSync();
     toast('Yedek yüklendi.');
   }
 
@@ -829,22 +1119,83 @@
 
   document.getElementById('reset-all').addEventListener('click', function () {
     if (!confirm('Bütün maddeler silinecek. Emin misin?')) return;
-    state = { todos: [], talks: [], payments: [] };
-    renderAll(); saveState();
+    var stamp = now();
+    ['todos', 'talks', 'payments'].forEach(function (k) {
+      state[k].forEach(function (it) { it.deleted = true; it.updatedAt = stamp; });
+    });
+    renderAll(); saveLocal(); scheduleSync();
     toast('Defter sıfırlandı.');
   });
 
+  // ================= senkron arayüzü =================
+  var gate = document.getElementById('gate');
+  var gatePass = document.getElementById('gate-pass');
+
+  function openGate() {
+    gatePass.value = '';
+    gatePass.type = 'password';
+    document.getElementById('gate-show').textContent = 'Şifreyi göster';
+    gate.classList.add('show');
+    setTimeout(function () { gatePass.focus(); }, 100);
+  }
+  function closeGate() { gate.classList.remove('show'); }
+
+  document.getElementById('gate-show').addEventListener('click', function () {
+    var showing = gatePass.type === 'text';
+    gatePass.type = showing ? 'password' : 'text';
+    this.textContent = showing ? 'Şifreyi göster' : 'Şifreyi gizle';
+  });
+
+  document.getElementById('gate-skip').addEventListener('click', function () {
+    try { localStorage.setItem(SKIP_KEY, '1'); } catch (e) {}
+    closeGate();
+    toast('Eşitleme kapalı. Yedek sekmesinden istediğin an açabilirsin.');
+  });
+
+  document.getElementById('gate-ok').addEventListener('click', function () {
+    var pass = gatePass.value.trim();
+    if (pass.length < 4) { toast('Şifre en az 4 karakter olmalı.'); return; }
+    closeGate();
+    try { localStorage.removeItem(SKIP_KEY); } catch (e) {}
+    connect(pass, true);
+  });
+
+  gatePass.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('gate-ok').click();
+  });
+
+  document.getElementById('sync-setup').addEventListener('click', openGate);
+  document.getElementById('sync-now').addEventListener('click', function () { syncNow(false); });
+
+  document.getElementById('sync-off').addEventListener('click', function () {
+    if (!confirm('Eşitleme bu cihazda kapatılacak. Notların cihazda kalır, buluttaki kopya silinmez. Emin misin?')) return;
+    creds = null;
+    clearInterval(pollTimer);
+    try { localStorage.removeItem(PASS_KEY); localStorage.setItem(SKIP_KEY, '1'); } catch (e) {}
+    setSync('off', '○ Yerel');
+    toast('Eşitleme kapatıldı.');
+  });
+
+  document.getElementById('sync-pill').addEventListener('click', function () {
+    if (creds) syncNow(false);
+    else { goBackupTab(); openGate(); }
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && creds) syncNow(true);
+  });
+  window.addEventListener('online', function () { if (creds) syncNow(true); });
+
+  // ================= ortak =================
   function renderStats() {
     var el = document.getElementById('stat-line');
     if (!el) return;
-    var openTodos = state.todos.filter(function (t) { return !t.done; }).length;
-    var openPays  = state.payments.filter(function (p) { return !p.paid; }).length;
-    el.textContent = state.todos.length + ' görev (' + openTodos + ' açık) · ' +
-                     state.talks.length + ' konu · ' +
-                     state.payments.length + ' ödeme (' + openPays + ' bekliyor)';
+    var t = live(state.todos), p = live(state.payments);
+    el.textContent = t.length + ' görev (' + t.filter(function (x) { return !x.done; }).length + ' açık) · ' +
+                     live(state.talks).length + ' konu · ' +
+                     p.length + ' ödeme (' + p.filter(function (x) { return !x.paid; }).length + ' bekliyor)';
   }
 
-  // ---------- Ortak ----------
   function renderAll() {
     renderTodos();
     renderTalks();
@@ -852,7 +1203,22 @@
     renderStats();
   }
 
-  loadState();
+  // ---- açılış ----
+  loadLocal();
+  renderAll();
+  setSync('off', '○ Yerel');
+
+  var savedPass = null, skipped = false;
+  try {
+    savedPass = localStorage.getItem(PASS_KEY);
+    skipped = localStorage.getItem(SKIP_KEY) === '1';
+  } catch (e) {}
+
+  if (savedPass && hasCrypto) {
+    connect(savedPass, false);
+  } else if (!skipped && hasCrypto) {
+    setTimeout(openGate, 400);
+  }
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
