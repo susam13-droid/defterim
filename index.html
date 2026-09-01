@@ -175,7 +175,7 @@
   /* ---------- Form ---------- */
   .add-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
   .add-form .grow { flex: 1 1 200px; min-width: 0; }
-  input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
+  input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
     font-family: 'Inter', sans-serif;
     font-size: 16px;
     color: var(--ink);
@@ -294,6 +294,47 @@
   }
   .delete-btn:hover { color: var(--red); }
 
+  /* ---------- Uyku Günlüğü ---------- */
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-group label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .04em; }
+  .field-group input { width: 100%; }
+
+  .sleep-summary { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .sleep-stat { flex: 1 1 100px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; }
+  .sleep-stat .label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .04em; }
+  .sleep-stat .value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; margin-top: 3px; color: var(--ink); }
+
+  .sleep-chart { display: flex; align-items: flex-end; gap: 8px; height: 110px; margin-bottom: 22px; padding: 0 2px; border-bottom: 1px solid var(--line); }
+  .sleep-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .sleep-bar { width: 65%; border-radius: 4px 4px 0 0; min-height: 3px; }
+  .sleep-bar.good { background: var(--sage); }
+  .sleep-bar.mid  { background: var(--ochre); }
+  .sleep-bar.low  { background: var(--red); }
+  .sleep-bar-label { font-size: 10px; color: var(--ink-faint); margin-top: 6px; white-space: nowrap; }
+
+  .sleep-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sleep-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+  .sleep-times { font-size: 15px; white-space: nowrap; }
+  .sleep-note { grid-column: 2 / span 2; font-size: 12px; color: var(--ink-faint); margin-top: -2px; word-break: break-word; }
+  .sleep-duration {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .sleep-duration.good { background: var(--sage-bg); color: var(--sage); }
+  .sleep-duration.mid  { background: var(--ochre-bg); color: var(--ochre); }
+  .sleep-duration.low  { background: var(--rose-bg); color: var(--red); }
+
   /* ---------- Ödemeler ---------- */
   .pay-item {
     display: grid;
@@ -406,6 +447,9 @@
     .tab[data-section="backup"] { min-height: 62px; font-size: 12px; }
     .pay-item { grid-template-columns: 1fr auto auto; row-gap: 4px; padding: 11px 4px; }
     .pay-desc { grid-column: 1 / -1; }
+    .sleep-item { grid-template-columns: 1fr auto auto; row-gap: 4px; }
+    .sleep-note { grid-column: 1 / -1; }
+    .sleep-chart { gap: 5px; }
   }
 </style>
 </head>
@@ -414,7 +458,7 @@
 <div class="app">
   <div class="tabs">
     <button class="tab active" data-section="todos"><span>Yapılacaklar</span></button>
-    <button class="tab" data-section="talks"><span>Konuşulacaklar</span></button>
+    <button class="tab" data-section="talks"><span>Uyku Günlüğü</span></button>
     <button class="tab" data-section="payments"><span>Ödemeler</span></button>
     <button class="tab" data-section="backup"><span>Yedek</span></button>
   </div>
@@ -447,17 +491,31 @@
       <div class="list" id="todo-list"></div>
     </div>
 
-    <!-- KONUŞULACAKLAR -->
+    <!-- UYKU GÜNLÜĞÜ -->
     <div class="section" id="talks">
       <div class="page-header">
-        <p class="eyebrow">Notlar</p>
-        <h1>Konuşulacaklar</h1>
+        <p class="eyebrow">Takip</p>
+        <h1>Uyku Günlüğü</h1>
       </div>
       <form class="add-form" id="talk-form">
-        <input type="text" id="talk-input" class="grow" placeholder="Kiminle ne konuşulacak?" maxlength="300" autocomplete="off">
-        <button type="button" class="mic-btn" data-target="talk-input" aria-label="Sesli yaz">🎤</button>
+        <div class="field-group">
+          <label for="sleep-date">Tarih</label>
+          <input type="date" id="sleep-date" required>
+        </div>
+        <div class="field-group">
+          <label for="sleep-bed">Yatış</label>
+          <input type="time" id="sleep-bed" required>
+        </div>
+        <div class="field-group">
+          <label for="sleep-wake">Kalkış</label>
+          <input type="time" id="sleep-wake" required>
+        </div>
+        <input type="text" id="sleep-note" class="grow" placeholder="Not (opsiyonel, ör. kahve içtim)" maxlength="200" autocomplete="off">
+        <button type="button" class="mic-btn" data-target="sleep-note" aria-label="Sesli yaz">🎤</button>
         <button type="submit" class="btn">Ekle</button>
       </form>
+      <div class="sleep-summary" id="sleep-summary"></div>
+      <div class="sleep-chart" id="sleep-chart"></div>
       <div class="list" id="talk-list"></div>
     </div>
 
@@ -940,44 +998,99 @@
     if (t) { t.category = e.target.value; t.updatedAt = now(); renderTodos(); saveLocal(); scheduleSync(); }
   });
 
-  // ================= Konuşulacaklar =================
+  // ================= Uyku Günlüğü =================
+  function toMin(hhmm) {
+    var p = String(hhmm || '0:0').split(':');
+    return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0);
+  }
+  function sleepMinutes(bed, wake) {
+    var diff = toMin(wake) - toMin(bed);
+    if (diff <= 0) diff += 24 * 60; // gece yarısını geçen uyku
+    return diff;
+  }
+  function fmtDur(mins) {
+    var h = Math.floor(mins / 60), m = mins % 60;
+    return h + ' sa' + (m ? ' ' + m + ' dk' : '');
+  }
+  function durClass(mins) {
+    return mins >= 420 ? 'good' : (mins >= 360 ? 'mid' : 'low');
+  }
+
   function renderTalks() {
     var list = document.getElementById('talk-list');
     var items = live(state.talks).slice().sort(function (a, b) {
-      if (!!a.done !== !!b.done) return a.done ? 1 : -1;
-      return (a.createdAt || 0) - (b.createdAt || 0);
+      return (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0);
     });
     if (!items.length) {
-      list.innerHTML = '<div class="empty-state">Konuşulacak bir şey aklına geldiğinde buraya yaz.</div>';
-      return;
+      list.innerHTML = '<div class="empty-state">Henüz kayıt yok. Bu gece kaçta yattığını yazarak başla.</div>';
+    } else {
+      list.innerHTML = items.map(function (t) {
+        var mins = sleepMinutes(t.bed, t.wake);
+        var cls = durClass(mins);
+        return '<div class="sleep-item">' +
+          '<span class="sleep-date">' + formatDate(t.date) + '</span>' +
+          '<span class="sleep-times">' + esc(t.bed) + ' → ' + esc(t.wake) + '</span>' +
+          '<span class="sleep-duration ' + cls + '">' + fmtDur(mins) + '</span>' +
+          '<button class="delete-btn" data-action="delete-talk" data-id="' + t.id + '" aria-label="Sil">×</button>' +
+          (t.note ? '<span class="sleep-note">' + esc(t.note) + '</span>' : '') +
+          '</div>';
+      }).join('');
     }
-    list.innerHTML = items.map(function (t) {
-      return '<div class="item' + (t.done ? ' done' : '') + '">' +
-        '<button class="check" data-action="toggle-talk" data-id="' + t.id + '" aria-label="Konuşuldu işaretle">✓</button>' +
-        '<span class="item-text">' + esc(t.text) + '</span>' +
-        '<button class="delete-btn" data-action="delete-talk" data-id="' + t.id + '" aria-label="Sil">×</button>' +
+    renderSleepSummary(items);
+    renderSleepChart(items);
+  }
+
+  function renderSleepSummary(items) {
+    var el = document.getElementById('sleep-summary');
+    if (!el) return;
+    if (!items.length) { el.innerHTML = ''; return; }
+    var recent = items.slice(0, 7);
+    var durs = recent.map(function (t) { return sleepMinutes(t.bed, t.wake); });
+    var avg = Math.round(durs.reduce(function (a, b) { return a + b; }, 0) / durs.length);
+    var max = Math.max.apply(null, durs), min = Math.min.apply(null, durs);
+    el.innerHTML =
+      '<div class="sleep-stat"><div class="label">Ortalama (' + recent.length + ' gece)</div><div class="value">' + fmtDur(avg) + '</div></div>' +
+      '<div class="sleep-stat"><div class="label">En uzun</div><div class="value">' + fmtDur(max) + '</div></div>' +
+      '<div class="sleep-stat"><div class="label">En kısa</div><div class="value">' + fmtDur(min) + '</div></div>';
+  }
+
+  function renderSleepChart(items) {
+    var el = document.getElementById('sleep-chart');
+    if (!el) return;
+    if (!items.length) { el.innerHTML = ''; return; }
+    var maxScale = 600; // 10 saat = tam yükseklik referansı
+    var recent = items.slice(0, 7).slice().reverse(); // kronolojik sıra
+    el.innerHTML = recent.map(function (t) {
+      var mins = sleepMinutes(t.bed, t.wake);
+      var pct = Math.max(4, Math.min(100, Math.round(mins / maxScale * 100)));
+      var label = formatDate(t.date).slice(0, 5);
+      return '<div class="sleep-bar-col">' +
+        '<div class="sleep-bar ' + durClass(mins) + '" style="height:' + pct + '%" title="' + fmtDur(mins) + '"></div>' +
+        '<div class="sleep-bar-label">' + label + '</div>' +
         '</div>';
     }).join('');
   }
 
   document.getElementById('talk-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var input = document.getElementById('talk-input');
-    var text = input.value.trim();
-    if (!text) return;
-    state.talks.push({ id: uid(), text: text, done: false, createdAt: now(), updatedAt: now(), deleted: false });
-    input.value = '';
+    var dateEl = document.getElementById('sleep-date');
+    var bedEl  = document.getElementById('sleep-bed');
+    var wakeEl = document.getElementById('sleep-wake');
+    var noteEl = document.getElementById('sleep-note');
+    var date = dateEl.value, bed = bedEl.value, wake = wakeEl.value, note = noteEl.value.trim();
+    if (!date || !bed || !wake) { toast('Tarih, yatış ve kalkış saatini gir.'); return; }
+    state.talks.push({ id: uid(), date: date, bed: bed, wake: wake, note: note, createdAt: now(), updatedAt: now(), deleted: false });
+    bedEl.value = ''; wakeEl.value = ''; noteEl.value = '';
+    dateEl.valueAsDate = new Date();
     renderTalks(); saveLocal(); scheduleSync();
   });
 
   document.getElementById('talk-list').addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-action]');
+    var btn = e.target.closest('[data-action="delete-talk"]');
     if (!btn) return;
     var t = state.talks.find(function (x) { return x.id === btn.dataset.id; });
     if (!t) return;
-    if (btn.dataset.action === 'delete-talk') { t.deleted = true; t.updatedAt = now(); }
-    else if (btn.dataset.action === 'toggle-talk') { t.done = !t.done; t.updatedAt = now(); }
-    else return;
+    t.deleted = true; t.updatedAt = now();
     renderTalks(); saveLocal(); scheduleSync();
   });
 
@@ -1192,7 +1305,7 @@
     if (!el) return;
     var t = live(state.todos), p = live(state.payments);
     el.textContent = t.length + ' görev (' + t.filter(function (x) { return !x.done; }).length + ' açık) · ' +
-                     live(state.talks).length + ' konu · ' +
+                     live(state.talks).length + ' gece · ' +
                      p.length + ' ödeme (' + p.filter(function (x) { return !x.paid; }).length + ' bekliyor)';
   }
 
@@ -1207,6 +1320,8 @@
   loadLocal();
   renderAll();
   setSync('off', '○ Yerel');
+  var sleepDateEl = document.getElementById('sleep-date');
+  if (sleepDateEl) sleepDateEl.valueAsDate = new Date();
 
   var savedPass = null, skipped = false;
   try {
